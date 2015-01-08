@@ -1,0 +1,11 @@
+<fsxml>
+	<session id="">
+		<properties>
+			<status>open/closed/error???</status>
+			<date_created>20080904103900</date_created> <!-- year month day hour min sec -->
+			<expire>3600</expire> <!-- in seconds? -->
+		</properties>
+	
+		<request></request>
+	</session>
+</fsxml>

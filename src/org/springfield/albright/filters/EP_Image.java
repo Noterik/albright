@@ -1,6 +1,7 @@
 package org.springfield.albright.filters;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.springfield.albright.AlbrightFilterInterface;
 
@@ -27,8 +28,8 @@ public class EP_Image implements AlbrightFilterInterface {
 		
 		try {
 			Api2Query europeanaQuery = new Api2Query();
-	        europeanaQuery.setTitle("bike");
-	        europeanaQuery.setType(EuropeanaComplexQuery.TYPE.VIDEO);
+	        europeanaQuery.setTitle("Berlin");
+	        europeanaQuery.setType(EuropeanaComplexQuery.TYPE.IMAGE);
 	        europeanaQuery.setDataProvider("Deutsche Welle");
 	   
 	        //perform search
@@ -37,15 +38,24 @@ public class EP_Image implements AlbrightFilterInterface {
 	        EuropeanaApi2Results res = europeanaClient.searchApi2(europeanaQuery, RESULTS_SIZE, 0);
 	        
 	        int count = 0;
+	        body = "<fsxml>";
 	        for (EuropeanaApi2Item item : res.getAllItems()) {
-	        	body += "<br>" + "**** " + (count++ + 1) + "<br>" +
-	   		         "Title: " + item.getTitle() + "<br>" +
-	   		         "Europeana URL: " + item.getObjectURL() + "<br>" +
-	   		         "Type: " + item.getType() + "<br>" +
-	   		         "Creator(s): " + item.getDcCreator() + "<br>" +
-	   		         "Thumbnail(s): " + item.getEdmPreview() + "<br>" +
-	   		         "Data provider: " + item.getDataProvider();
-			}
+	        	   body += "<ep_images id=\"" + (count++ + 1) + "\"><properties>";
+	        	   body += "<title><![CDATA[" + item.getTitle().get(0) + "]]></title>";
+	        	   body += "<url><![CDATA[" + item.getObjectURL() + "]]></url>";
+	        	   body += "<type>" + item.getType() + "</type>";
+	        	   List<String> creators = item.getDcCreator();
+	        	   //Check if there is a creator set in the item and only then show it.
+	        	   if(creators!= null && creators.size()>0) {
+	        		   body += "<creator><![CDATA[" + creators.get(0) + "]]></creator>";
+	        	   }
+	        	   body += "<thumbnail><![CDATA[" + item.getEdmPreview().get(0) + "]]></thumbnail>";
+	        	   body += "<provider><![CDATA[" + item.getDataProvider().get(0) + "]]></provider>";
+	        	   body += "</properties></ep_images>";
+	        	           
+	        }
+	        body += "</fsxml>";
+	        	
         } catch(Exception e) {
         	e.printStackTrace();
         }

@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springfield.albright.AlbrightFilterInterface;
+import org.springfield.fs.Fs;
+import org.springfield.fs.FsNode;
 
 import eu.europeana.api.client.EuropeanaApi2Client;
 import eu.europeana.api.client.exception.EuropeanaApiProblem;
@@ -23,14 +25,21 @@ public class EP_Image implements AlbrightFilterInterface {
 		// call the europeana API
 			// CALLCALLLCALL
 		// body has to be in fsxml format
+		FsNode node = Fs.getNode(newUri);
+		if(node==null) {
+			return null;
+		}
+		
+		String genre = node.getProperty("genre");
+		
 		
 		String body = "";
 		
 		try {
 			Api2Query europeanaQuery = new Api2Query();
-	        europeanaQuery.setTitle("Berlin");
+	        europeanaQuery.setTitle(genre);
 	        europeanaQuery.setType(EuropeanaComplexQuery.TYPE.IMAGE);
-	        europeanaQuery.setDataProvider("Deutsche Welle");
+	        //europeanaQuery.setDataProvider("Deutsche Welle");
 	   
 	        //perform search
 	        EuropeanaApi2Client europeanaClient = new EuropeanaApi2Client();

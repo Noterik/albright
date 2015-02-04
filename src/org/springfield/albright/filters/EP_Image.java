@@ -1,6 +1,7 @@
 package org.springfield.albright.filters;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.List;
 
 import org.springfield.albright.AlbrightFilterInterface;
@@ -25,42 +26,46 @@ public class EP_Image implements AlbrightFilterInterface {
 		// call the europeana API
 			// CALLCALLLCALL
 		// body has to be in fsxml format
-		FsNode node = Fs.getNode(newUri);
-		if(node==null) {
+		FsNode videonode = Fs.getNode(newUri);
+		if(videonode==null) {
 			return null;
 		}
 		
-		String genre = node.getProperty("genre");
-		
-		
+		String genreProprty = videonode.getProperty("genre");
+		String terms = videonode.getProperty("ThesaurusTerm");
+		terms = terms.replaceAll(","," "); //Terms can be multiple separated by comma, so replace comma with space
+		String all = genreProprty + " " + terms;
+		all = URLEncoder.encode(all);
 		String body = "";
 		
 		try {
 			Api2Query europeanaQuery = new Api2Query();
-	        europeanaQuery.setTitle(genre);
-	        europeanaQuery.setType(EuropeanaComplexQuery.TYPE.IMAGE);
+			europeanaQuery.setQueryParams("query="+all+"&qf=TYPE%3A"+EuropeanaComplexQuery.TYPE.IMAGE);
+	        //europeanaQuery.setTitle(genre);
+	        //europeanaQuery.setType(EuropeanaComplexQuery.TYPE.IMAGE);
 	        //europeanaQuery.setDataProvider("Deutsche Welle");
 	   
 	        //perform search
 	        EuropeanaApi2Client europeanaClient = new EuropeanaApi2Client();
-	        final int RESULTS_SIZE = 5;	
+	        final int RESULTS_SIZE = 12;	
 	        EuropeanaApi2Results res = europeanaClient.searchApi2(europeanaQuery, RESULTS_SIZE, 0);
 	        
 	        int count = 0;
 	        body = "<fsxml>";
 	        for (EuropeanaApi2Item item : res.getAllItems()) {
-	        	   body += "<ep_images id=\"" + (count++ + 1) + "\"><properties>";
-	        	   body += "<title><![CDATA[" + item.getTitle().get(0) + "]]></title>";
-	        	   body += "<url><![CDATA[" + item.getObjectURL() + "]]></url>";
-	        	   body += "<type>" + item.getType() + "</type>";
-	        	   List<String> creators = item.getDcCreator();
-	        	   //Check if there is a creator set in the item and only then show it.
-	        	   if(creators!= null && creators.size()>0) {
-	        		   body += "<creator><![CDATA[" + creators.get(0) + "]]></creator>";
-	        	   }
-	        	   body += "<thumbnail><![CDATA[" + item.getEdmPreview().get(0) + "]]></thumbnail>";
-	        	   body += "<provider><![CDATA[" + item.getDataProvider().get(0) + "]]></provider>";
-	        	   body += "</properties></ep_images>";
+	        	if(item.getEdmPreview()==null) continue;
+	        	body += "<ep_images id=\"" + (count++ + 1) + "\"><properties>";
+				body += "<title><![CDATA[" + item.getTitle().get(0) + "]]></title>";
+				body += "<url><![CDATA[" + item.getObjectURL() + "]]></url>";
+				body += "<type>" + item.getType() + "</type>";
+				List<String> creators = item.getDcCreator();
+				//Check if there is a creator set in the item and only then show it.
+				if(creators!= null && creators.size()>0) {
+				   body += "<creator><![CDATA[" + creators.get(0) + "]]></creator>";
+				}
+				body += "<thumbnail><![CDATA[" + item.getEdmPreview().get(0) + "]]></thumbnail>";
+				body += "<provider><![CDATA[" + item.getDataProvider().get(0) + "]]></provider>";
+				body += "</properties></ep_images>";
 	        	           
 	        }
 	        body += "</fsxml>";

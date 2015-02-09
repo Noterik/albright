@@ -1,6 +1,7 @@
 package org.springfield.albright;
 
 import org.springfield.albright.filters.EP_Image;
+import org.springfield.albright.filters.EP_Video;
 import org.springfield.albright.homer.LazyHomer;
 import org.springfield.mojo.interfaces.ServiceInterface;
 import org.springfield.mojo.interfaces.ServiceManager;
@@ -24,6 +25,8 @@ public class ServiceHandler implements ServiceInterface{
 	public String get(String uri,String fsxml,String mimetype) {
 		if (uri.indexOf("/ep_images/")!=-1) {
 			return EP_Image.get(uri);
+		}else if(uri.indexOf("/ep_videos/")!=-1) {
+			return EP_Video.get(uri);
 		}
 		return null;
 	}

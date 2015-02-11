@@ -24,9 +24,9 @@ public class ServiceHandler implements ServiceInterface{
 	
 	public String get(String uri,String fsxml,String mimetype) {
 		if (uri.indexOf("/ep_images/")!=-1) {
-			return EP_Image.get(uri);
+			return EP_Image.get(uri,fsxml,mimetype);
 		}else if(uri.indexOf("/ep_videos/")!=-1) {
-			return EP_Video.get(uri);
+			return EP_Video.get(uri,fsxml,mimetype);
 		}
 		return null;
 	}

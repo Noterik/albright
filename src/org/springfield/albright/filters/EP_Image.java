@@ -5,6 +5,7 @@ import java.net.URLEncoder;
 import java.util.List;
 
 import org.springfield.albright.AlbrightFilterInterface;
+import org.springfield.fs.FSList;
 import org.springfield.fs.Fs;
 import org.springfield.fs.FsNode;
 
@@ -18,7 +19,8 @@ import eu.europeana.api.client.result.EuropeanaApi2Results;
 
 public class EP_Image implements AlbrightFilterInterface {
 	
-	public static String get(String uri) {
+	public static String get(String uri,String fsxml,String mimetype) {
+		
 		System.out.println("EP_IMAGE CALLED2 = "+uri);
 		String newUri = uri.replace("/ep_images/", "");
 		// use springfield to find out more about the seed object (in this example luce video)
@@ -35,7 +37,20 @@ public class EP_Image implements AlbrightFilterInterface {
 		String terms = videonode.getProperty("ThesaurusTerm");
 		terms = terms.replaceAll(","," "); //Terms can be multiple separated by comma, so replace comma with space
 		String all = genreProprty + " " + terms;
+		
+		
+		if(fsxml!=null) {
+			//Parse the fsxml to get additional keywords
+			FsNode searchparams = new FsNode().parseFsNode(fsxml);
+			String keywords = searchparams.getProperty("keywords");
+			if(keywords!=null) {
+				all += " " + keywords;
+			}
+			System.out.println("Keywords: " + keywords);
+		}
+		
 		all = URLEncoder.encode(all);
+		
 		String body = "";
 		
 		try {

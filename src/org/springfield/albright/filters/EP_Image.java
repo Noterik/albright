@@ -36,8 +36,20 @@ public class EP_Image implements AlbrightFilterInterface {
 		String genreProprty = videonode.getProperty("genre");
 		String terms = videonode.getProperty("ThesaurusTerm");
 		terms = terms.replaceAll(","," "); //Terms can be multiple separated by comma, so replace comma with space
-		String all = genreProprty + " " + terms;
+		String title = videonode.getProperty("TitleSet_TitleSetInEnglish_title");
+		String split[]= title.split(" ");
+		String titleKeywords = "";
+
+		for(int i = 0; i < split.length; i++) {
+			String word = split[i];
+			System.out.println("Title key word: " + word + "!");
+			if(word.length()>3){
+				titleKeywords += word + " ";
+			}	
+		}
 		
+		titleKeywords = titleKeywords.trim();
+		String all = genreProprty + " " + terms + " " + titleKeywords;
 		
 		if(fsxml!=null) {
 			//Parse the fsxml to get additional keywords
@@ -46,11 +58,11 @@ public class EP_Image implements AlbrightFilterInterface {
 			if(keywords!=null) {
 				all += " " + keywords;
 			}
+			
 			System.out.println("Keywords: " + keywords);
 		}
 		
 		all = URLEncoder.encode(all);
-		
 		String body = "";
 		
 		try {

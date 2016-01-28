@@ -260,7 +260,6 @@ public class LazyHomer implements MargeObserver {
 	}
 	
 	public static void setLastSeen() {
-		System.out.println("SET LAST SEEN");
 		Long value = new Date().getTime();
 		ServiceInterface smithers = ServiceManager.getService("smithers");
 		if (smithers==null) return;
